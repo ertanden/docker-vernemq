@@ -1,3 +1,4 @@
+# BUILD IMAGE
 FROM erlang:19-slim as build
 LABEL maintainer="Ertan Deniz <ertanden@gmail.com>"
 
@@ -12,11 +13,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ENV VMQ_VERSION 1.4.0
+ENV VMQ_VERSION 1.4.1
 
 RUN git clone -b ${VMQ_VERSION} https://github.com/erlio/vernemq.git . \
     && make rel
 
+# RUNTIME IMAGE
 FROM debian:jessie
 LABEL maintainer="Ertan Deniz <ertanden@gmail.com>"
 
@@ -24,6 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libssl1.0.0 \
         curl \
         jq \
+        bash \
     && rm -rf /var/lib/apt/lists/*
 
 ENV HOME=/opt/vernemq
@@ -57,18 +60,19 @@ ENV DOCKER_VERNEMQ_KUBERNETES_NAMESPACE default
 ENV DOCKER_VERNEMQ_KUBERNETES_APP_LABEL vernemq
 ENV DOCKER_VERNEMQ_LOG__CONSOLE console
 ENV DOCKER_VERNEMQ_ALLOW_ANONYMOUS off
+ENV DOCKER_VERNEMQ_LOG__CONSOLE__LEVEL debug
 
 ADD files/vm.args ./etc/vm.args
-ADD bin/start.sh ./bin/start.sh
 ADD bin/rand_cluster_node.escript ./lib/rand_cluster_node.escript
+ADD bin/start.sh ./bin/start.sh
 
-RUN useradd --no-log-init -r -M -d ${HOME} vernemq
+RUN useradd --no-log-init -r -M -d ${HOME} -u 10001 vernemq
 
-RUN chgrp -Rf root ${HOME} && chmod -Rf g+w ${HOME} \
-      && chown -Rf vernemq ${HOME}
-RUN chmod g=u /etc/passwd
+RUN chmod -R u+x ${HOME}/bin && \
+    chgrp -R 0 ${HOME} && \
+    chmod -R g=u ${HOME} /etc/passwd
 
-USER vernemq
+USER 10001
 
 VOLUME ["${HOME}/log", "${HOME}/data", "${HOME}/etc"]
 
