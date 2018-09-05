@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ENV VMQ_VERSION 1.4.1
+ENV VMQ_VERSION 1.4.2
 
 RUN git clone -b ${VMQ_VERSION} https://github.com/erlio/vernemq.git . \
     && make rel
