@@ -1,33 +1,32 @@
 # BUILD IMAGE
-FROM erlang:19-slim as build
+FROM erlang:21-alpine as build
 LABEL maintainer="Ertan Deniz <ertanden@gmail.com>"
 
 WORKDIR /vernemq
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        gcc \
-        g++ \
-        make \
-        git-core \
-        ca-certificates \
-        libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --update \
+        build-base \
+        bsd-compat-headers \
+        git \
+        openssl-dev \
+  && rm -rf /var/cache/apk/*
 
-ENV VMQ_VERSION 1.4.2
+ENV VMQ_VERSION 1.6.1
 
 RUN git clone -b ${VMQ_VERSION} https://github.com/erlio/vernemq.git . \
     && make rel
 
 # RUNTIME IMAGE
-FROM debian:jessie
+FROM alpine:3.8
 LABEL maintainer="Ertan Deniz <ertanden@gmail.com>"
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        libssl1.0.0 \
+RUN apk add --update \
+        libstdc++ \
+        openssl \
         curl \
         jq \
         bash \
-    && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/cache/apk/*
 
 ENV HOME=/opt/vernemq
 WORKDIR ${HOME}
@@ -66,9 +65,10 @@ ADD files/vm.args ./etc/vm.args
 ADD bin/rand_cluster_node.escript ./lib/rand_cluster_node.escript
 ADD bin/start.sh ./bin/start.sh
 
-RUN useradd --no-log-init -r -M -d ${HOME} -u 10001 vernemq
+RUN adduser -H -D -h ${HOME} -u 10001 vernemq
 
-RUN chmod -R u+x ${HOME}/bin && \
+RUN chown -R vernemq ${HOME} && \
+    chmod -R u+x ${HOME}/bin && \
     chgrp -R 0 ${HOME} && \
     chmod -R g=u ${HOME} /etc/passwd
 
