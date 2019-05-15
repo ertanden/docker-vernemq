@@ -1,5 +1,5 @@
 # BUILD IMAGE
-FROM erlang:21-alpine as build
+FROM erlang:21.3.8-alpine as build
 LABEL maintainer="Ertan Deniz <ertanden@gmail.com>"
 
 WORKDIR /vernemq
@@ -11,16 +11,17 @@ RUN apk add --update \
         openssl-dev \
   && rm -rf /var/cache/apk/*
 
-ENV VMQ_VERSION 1.6.2
+ENV VMQ_VERSION 1.7.0
 
-RUN git clone -b ${VMQ_VERSION} https://github.com/erlio/vernemq.git . \
+RUN git clone -b ${VMQ_VERSION} --single-branch --depth 1 https://github.com/erlio/vernemq.git . \
     && make rel
 
 # RUNTIME IMAGE
-FROM alpine:3.8
+FROM alpine:3.9
 LABEL maintainer="Ertan Deniz <ertanden@gmail.com>"
 
 RUN apk add --update \
+        ncurses-libs \
         libstdc++ \
         openssl \
         curl \
