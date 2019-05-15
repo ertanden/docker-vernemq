@@ -11,7 +11,7 @@ RUN apk add --update \
         openssl-dev \
   && rm -rf /var/cache/apk/*
 
-ENV VMQ_VERSION 1.7.1
+ENV VMQ_VERSION 1.8.0
 
 RUN git clone -b ${VMQ_VERSION} --single-branch --depth 1 https://github.com/erlio/vernemq.git . \
     && make rel
