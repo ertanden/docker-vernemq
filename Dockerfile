@@ -9,9 +9,10 @@ RUN apk add --update \
         bsd-compat-headers \
         git \
         openssl-dev \
+        snappy-dev \
   && rm -rf /var/cache/apk/*
 
-ENV VMQ_VERSION 1.10.1
+ENV VMQ_VERSION 1.10.2
 
 RUN git clone -b ${VMQ_VERSION} --single-branch --depth 1 https://github.com/erlio/vernemq.git . \
     && make rel
@@ -24,6 +25,7 @@ RUN apk add --update \
         ncurses-libs \
         libstdc++ \
         openssl \
+        snappy \
         curl \
         jq \
         bash \
