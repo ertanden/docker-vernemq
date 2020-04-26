@@ -1,5 +1,5 @@
 # BUILD IMAGE
-FROM erlang:22.2.2-alpine as build
+FROM erlang:21.3-alpine as build
 LABEL maintainer="Ertan Deniz <ertanden@gmail.com>"
 
 WORKDIR /vernemq
@@ -17,7 +17,7 @@ RUN git clone -b ${VMQ_VERSION} --single-branch --depth 1 https://github.com/erl
     && make rel
 
 # RUNTIME IMAGE
-FROM alpine:3.11
+FROM alpine:3.9
 LABEL maintainer="Ertan Deniz <ertanden@gmail.com>"
 
 RUN apk add --update \
