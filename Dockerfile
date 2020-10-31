@@ -18,7 +18,7 @@ RUN git clone -b ${VMQ_VERSION} --single-branch --depth 1 https://github.com/erl
     && make rel
 
 # RUNTIME IMAGE
-FROM alpine:3.9
+FROM alpine:3.11
 LABEL maintainer="Ertan Deniz <ertanden@gmail.com>"
 
 RUN apk add --update \
