@@ -10,6 +10,7 @@ RUN apk add --update \
         git \
         openssl-dev \
         snappy-dev \
+        curl \
   && rm -rf /var/cache/apk/*
 
 ENV VMQ_VERSION 1.11.0
