@@ -1,5 +1,5 @@
 # BUILD IMAGE
-FROM erlang:21.3-alpine as build
+FROM erlang:22.3-alpine as build
 LABEL maintainer="Ertan Deniz <ertanden@gmail.com>"
 
 WORKDIR /vernemq
@@ -12,7 +12,7 @@ RUN apk add --update \
         snappy-dev \
   && rm -rf /var/cache/apk/*
 
-ENV VMQ_VERSION 1.10.2
+ENV VMQ_VERSION 1.11.0
 
 RUN git clone -b ${VMQ_VERSION} --single-branch --depth 1 https://github.com/erlio/vernemq.git . \
     && make rel
